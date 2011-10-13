@@ -5,6 +5,11 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+fi
+
 #---------------
 # Shell options
 #---------------
@@ -139,6 +144,7 @@ export CVS_RSH=ssh
 export DISPLAY=":0.0"
 export LANG=ru_RU.UTF-8
 export JAVA_HOME=~/opt/jdk1.6.0_25/bin/java
+export GIT_SSL_NO_VERIFY=true
 
 # Now set the prompt string. 
 export PS1='\h:$(echo $PWD | sed -e "s!^$HOME!~!")/ '
