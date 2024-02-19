@@ -1,4 +1,4 @@
-;;; Time-stamp: <2011-09-24 03:26:52 andreiw>
+;;; Time-stamp: <2017-03-13 13:11:32 awarkentin>
 ;;; Andrey Warkentin's .emacs file
 ;;; Modified from Eugen Warkentin's .emacs file
 ;;; ---------------------------------------------
@@ -55,12 +55,19 @@
 ;;; Load up a2ps stuff so we can print, but not on OS X.
 ;;; (load "a2ps-print")
 
-;;; Mouse wheel stuff, which works only on Emacs >= 21
-    (cond
-     ((<= 21 emacs-major-version)
-      (mouse-wheel-mode 1)
-      (setq mouse-wheel-follow-mouse t)
-      ))
+;;; Mouse wheel stuff
+(unless (display-graphic-p)
+  (xterm-mouse-mode 1)
+  (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
+  (global-set-key (kbd "<mouse-5>") 'scroll-up-line)
+  )
+(when (display-graphic-p)
+  (cond
+   ((<= 21 emacs-major-version)
+    (mouse-wheel-mode 1)
+    (setq mouse-wheel-follow-mouse t)
+    ))
+  )
  
 ;;; Prevent Extraneous Tabs
 ;;;
@@ -198,6 +205,13 @@
           (cons '("python" . python-mode)
                 interpreter-mode-alist))
 
+;;; Draw tabs with the same color as trailing whitespace
+    (add-hook 'font-lock-mode-hook
+              (lambda ()
+                (font-lock-add-keywords
+                 nil
+                 '(("\t" 0 'trailing-whitespace prepend)))))
+
     (defun linux-c-mode ()
       "C mode with adjusted defaults for use with the Linux kernel."
       (interactive)
@@ -206,24 +220,42 @@
       (setq tab-width 8)
       (setq indent-tabs-mode t)
       (setq c-basic-offset 8)
-      (setq show-trailing-whitespace t))
+      (setq show-trailing-whitespace t)
+      )
 
-      ;; Draw tabs with the same color as trailing whitespace  
+    (defun esx-c-mode ()
+      "C mode with adjusted defaults for use with the ESX kernel."
+      (interactive)
+      (c-mode)
+      (c-set-style "K&R")
+      (setq tab-width 3)
+      (setq indent-tabs-mode nil)
+      (setq c-basic-offset 3)
+      (setq show-trailing-whitespace t)
+      )
 
-      (add-hook 'font-lock-mode-hook  
-                (lambda ()  
-                  (font-lock-add-keywords  
-                   nil  
-                   '(("\t" 0 'trailing-whitespace prepend)))))
+    (defun unicorn-c-mode ()
+      "C mode with adjusted defaults for use with Unicorn."
+      (interactive)
+      (c-mode)
+      (c-set-style "K&R")
+      (setq tab-width 4)
+      (setq indent-tabs-mode nil)
+      (setq c-basic-offset 4)
+      (setq show-trailing-whitespace t)
+      )
 
-;;; Of course there are lots of other indentation features that I
-;;; haven't touched on here.  Until the texinfo is complete, you're
-;;; going to have to explore these on your own.  Here's a sample .emacs
-;;; file that might help you along the way.  Just hit "C-x C-p", then
-;;; "ESC w" to copy this region, then paste it into your .emacs file
-;;; with "C-y".  You may want to change some of the actual values.
-    (setq c-basic-offset 2)
-    
+    (defun efi-c-mode ()
+      "C mode with adjusted defaults for use with EFI."
+      (interactive)
+      (c-mode)
+      (c-set-style "K&R")
+      (setq tab-width 2)
+      (setq indent-tabs-mode nil)
+      (setq c-basic-offset 2)
+      (setq show-trailing-whitespace t)
+      )
+
 ;;; header auto-inserts
     (add-hook 'find-file-hooks 'auto-insert)
     (load-library "autoinsert")
@@ -277,9 +309,9 @@
     (set-face-foreground 'region "white")
     
     (set-face-background 'tool-bar "gray50")
-    (set-face-background 'modeline "firebrick4")
-    (set-face-foreground 'modeline "wheat")
-    (make-face-bold 'modeline)
+    (set-face-background 'mode-line "firebrick4")
+    (set-face-foreground 'mode-line "wheat")
+    (make-face-bold 'mode-line)
     
     (set-face-foreground 'highlight "black")
     (set-face-background 'highlight "gold3")
@@ -315,3 +347,5 @@
 
 ;;; This ends the compile-the-.emacs
 ))
+
+(put 'downcase-region 'disabled nil)
